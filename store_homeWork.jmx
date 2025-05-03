@@ -23,6 +23,16 @@
             <stringProp name="Argument.desc">API URL</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
+          <elementProp name="user_name" elementType="Argument">
+            <stringProp name="Argument.name">user_name</stringProp>
+            <stringProp name="Argument.value">user${__threadNum}</stringProp>
+            <stringProp name="Argument.metadata">=</stringProp>
+          </elementProp>
+          <elementProp name="password" elementType="Argument">
+            <stringProp name="Argument.name">password</stringProp>
+            <stringProp name="Argument.value">user${__threadNum}</stringProp>
+            <stringProp name="Argument.metadata">=</stringProp>
+          </elementProp>
         </collectionProp>
       </Arguments>
       <hashTree/>
@@ -56,6 +66,18 @@
         </elementProp>
       </ThreadGroup>
       <hashTree>
+        <JSR223Sampler guiclass="TestBeanGUI" testclass="JSR223Sampler" testname="UserName Generator">
+          <stringProp name="scriptLanguage">groovy</stringProp>
+          <stringProp name="parameters"></stringProp>
+          <stringProp name="filename"></stringProp>
+          <stringProp name="cacheKey">true</stringProp>
+          <stringProp name="script">def threadNum = ctx.getThreadNum() + 1
+def suffix = System.currentTimeMillis()
+vars.put(&quot;user_name&quot;, &quot;qperf_${threadNum}_${suffix}&quot;)
+vars.put(&quot;password&quot;, &quot;pass_${threadNum}_${suffix}&quot;)
+</stringProp>
+        </JSR223Sampler>
+        <hashTree/>
         <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="Main Page">
           <stringProp name="HTTPSampler.domain">${web_url}</stringProp>
           <stringProp name="HTTPSampler.path">index.html</stringProp>
@@ -79,7 +101,13 @@
             <collectionProp name="Arguments.arguments">
               <elementProp name="" elementType="HTTPArgument">
                 <boolProp name="HTTPArgument.always_encode">false</boolProp>
-                <stringProp name="Argument.value">{&quot;username&quot;:&quot;costa1234567&quot;,&quot;password&quot;:&quot;MTIzNA==&quot;}</stringProp>
+                <stringProp name="Argument.value">{&#xd;
+  &quot;username&quot;: &quot;${user_name}&quot;,&#xd;
+  &quot;password&quot;: &quot;${password}&quot;&#xd;
+}&#xd;
+&#xd;
+&#xd;
+</stringProp>
                 <stringProp name="Argument.metadata">=</stringProp>
               </elementProp>
             </collectionProp>
@@ -97,14 +125,20 @@
             <collectionProp name="Arguments.arguments">
               <elementProp name="" elementType="HTTPArgument">
                 <boolProp name="HTTPArgument.always_encode">false</boolProp>
-                <stringProp name="Argument.value">{&quot;username&quot;:&quot;costa1234567&quot;,&quot;password&quot;:&quot;MTIzNA==&quot;}</stringProp>
+                <stringProp name="Argument.value">{&#xd;
+  &quot;username&quot;: &quot;${user_name}&quot;,&#xd;
+  &quot;password&quot;: &quot;${password}&quot;&#xd;
+}&#xd;
+&#xd;
+&#xd;
+</stringProp>
                 <stringProp name="Argument.metadata">=</stringProp>
               </elementProp>
             </collectionProp>
           </elementProp>
         </HTTPSamplerProxy>
         <hashTree>
-          <RegexExtractor guiclass="RegexExtractorGui" testclass="RegexExtractor" testname="Regular Expression Extractor" enabled="true">
+          <RegexExtractor guiclass="RegexExtractorGui" testclass="RegexExtractor" testname="Regular Expression Extractor">
             <stringProp name="RegexExtractor.useHeaders">false</stringProp>
             <stringProp name="RegexExtractor.refname">auth_token_generated_after_login_was_successful</stringProp>
             <stringProp name="RegexExtractor.regex">Auth_token:\s*([A-Za-z0-9+=/_-]+)</stringProp>
@@ -134,7 +168,7 @@
         </HTTPSamplerProxy>
         <hashTree>
           <JSONPostProcessor guiclass="JSONPostProcessorGui" testclass="JSONPostProcessor" testname="JSON Extractor">
-            <stringProp name="JSONPostProcessor.referenceNames">auth_token_from_ckeck</stringProp>
+            <stringProp name="JSONPostProcessor.referenceNames">auth_token_from_check</stringProp>
             <stringProp name="JSONPostProcessor.jsonPathExprs">$.Item.token</stringProp>
             <stringProp name="JSONPostProcessor.match_numbers">1</stringProp>
             <stringProp name="JSONPostProcessor.defaultValues">NOT_FOUND</stringProp>
@@ -194,7 +228,7 @@
                 <boolProp name="HTTPArgument.always_encode">false</boolProp>
                 <stringProp name="Argument.value">{&#xd;
   &quot;id&quot;: &quot;${__UUID()}&quot;,&#xd;
-  &quot;cookie&quot;: &quot;${auth_token_from_ckeck}&quot;,&#xd;
+  &quot;cookie&quot;: &quot;${auth_token_from_check}&quot;,&#xd;
   &quot;prod_id&quot;: &quot;${__Random(1,20)}&quot;,&#xd;
   &quot;flag&quot;: true&#xd;
 }&#xd;
@@ -218,7 +252,7 @@
               <elementProp name="" elementType="HTTPArgument">
                 <boolProp name="HTTPArgument.always_encode">false</boolProp>
                 <stringProp name="Argument.value">{&#xd;
-  &quot;cookie&quot;: &quot;${auth_token_from_ckeck}&quot;&#xd;
+  &quot;cookie&quot;: &quot;${auth_token_from_check}&quot;&#xd;
 }&#xd;
 </stringProp>
                 <stringProp name="Argument.metadata">=</stringProp>
@@ -235,16 +269,10 @@
           </JSONPostProcessor>
           <hashTree/>
         </hashTree>
-        <GenericController guiclass="LogicControllerGui" testclass="GenericController" testname="01-Web_URL" enabled="false"/>
-        <hashTree/>
-        <OnceOnlyController guiclass="OnceOnlyControllerGui" testclass="OnceOnlyController" testname="02-Once Only Controller" enabled="false"/>
-        <hashTree/>
-        <GenericController guiclass="LogicControllerGui" testclass="GenericController" testname="03-API_URL" enabled="false"/>
-        <hashTree/>
         <CookieManager guiclass="CookiePanel" testclass="CookieManager" testname="HTTP Cookie Manager">
           <collectionProp name="CookieManager.cookies">
             <elementProp name="cookie" elementType="Cookie" testname="cookie">
-              <stringProp name="Cookie.value">${auth_token_from_ckeck}</stringProp>
+              <stringProp name="Cookie.value">${auth_token_from_check}</stringProp>
               <stringProp name="Cookie.domain">${api_url}</stringProp>
               <stringProp name="Cookie.path">/</stringProp>
               <boolProp name="Cookie.secure">true</boolProp>
